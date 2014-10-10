@@ -3,7 +3,7 @@ honeywell-thermostat
 
 This started as a fork from nottings' https://github.com/nottings/python-honeywell-thermostat
 
-Huge thanks to him for the initial code, which honeywell_get.py borrows generously from. 
+Huge thanks to him for the initial code, which honeywell_get.py borrows heavily from. 
 
 So far, I've added Heroku config-vars, and a simple HTTP GET.
 
