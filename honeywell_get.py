@@ -9,7 +9,8 @@ import os
 
 urls = (
     '/', 'index',
-    '/temps', 'temps'
+    '/temps', 'temps',
+    '/saveTemps', 'saveTemps'
 )
 
 # Login information for Total Connect Comfort web site
@@ -66,6 +67,12 @@ class index:
     def GET(self):
         return get_data().text
 
+class saveTemps:
+    def GET(self):
+        temps = get_data().text
+        r = requests.post(TEMPS_URL, data=temps)
+        return r.text
+        
 class temps:
     def GET(self):
         getMonth = time.strftime("%B", time.localtime())
