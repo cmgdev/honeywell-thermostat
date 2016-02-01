@@ -69,8 +69,8 @@ class index:
 
 class saveTemps:
     def GET(self):
-        temps = get_data().text
-        r = requests.post(TEMPS_URL, data=temps)
+        temps = get_data().json()
+        r = requests.post(TEMPS_URL, json=temps)
         return r.text
         
 class temps:
