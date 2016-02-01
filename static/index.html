@@ -1,0 +1,114 @@
+<html>
+    <head>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.time.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
+        <script src="js/util.js"></script>
+
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/colors/1.0/colors.min.css">
+        <link rel="stylesheet" href="css/style.css">
+
+        <script>
+            var options = {
+                xaxis: {
+                    mode: 'time',
+                    timezone: 'browser'
+                },
+                yaxis: {
+                    max: 110,
+                    min: 0
+                },
+                legend: {
+                    position: 'se'
+                }
+            };
+
+            var plot;
+
+            $(document).ready(function() {
+                $.ajax({
+                    url: '/temps',
+                    type: 'GET',
+                    data: {month: moment().format("MMMM"),
+                           year: moment().format("YYYY")},
+                    datatype: 'json',
+                    success: function(result){
+                        tempsJson = JSON.parse(result);
+                        var insideTemps = tempsJson.data.insideTemps;
+                        var outsideTemps = tempsJson.data.outsideTemps;
+                        var coolSetpoints = tempsJson.data.coolSetpoints;
+                        var heatSetpoints = tempsJson.data.heatSetpoints;
+                        options.yaxis.max = parseInt(tempsJson.data.maxTemp) + 10;
+                        options.yaxis.min = parseInt(tempsJson.data.minTemp) - 10;
+
+                        plot = $.plot($("#placeholder"), [
+                            {
+                                color: $('#color-0').css('background-color'),
+                                data: insideTemps,
+                                label: 'Inside Temperature'
+                            },
+                            {
+                                color: $('#color-1').css('background-color'),
+                                data: outsideTemps,
+                                label: 'Outside Temperature'
+                            },
+                            {
+                                color: $('#color-2').css('background-color'),
+                                data: coolSetpoints,
+                                label: 'Cool Setting'
+                            },
+                            {
+                                color: $('#color-3').css('background-color'),
+                                data: heatSetpoints,
+                                label: 'Heat Setting'
+                            }
+                        ], options);
+                        $("#loading").hide();
+                        $("#previousMonth").text('< ' + moment().subtract(1, 'M').format('MMMM YYYY'));
+                        $("#nextMonth").text(moment().add(1, 'M').format('MMMM YYYY') + ' >');
+                    }
+                });
+            });
+
+            $(window).resize(function(){
+                if(plot != undefined){
+                    plot.resize();
+                    plot.setupGrid();
+                    plot.draw();
+                }
+            });
+
+        </script>
+    </head>
+    <body>
+
+        <div class="container-fluid" id="placeholder" style="height:70%;width:70%;">
+            <div id="loading"><i class="fa fa-spinner fa-spin fa-5x blue"></i></div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-1 col-md-offset-5">
+                    <a id="previousMonth"></a>
+                </div>
+                <div class="col-md-1">
+                    <a id="nextMonth"></a>
+                </div>
+            </div>
+        </div>
+
+        <div id="color-0" class="mighty-slate"></div>
+        <div id="color-1" class="pacifica"></div>
+        <div id="color-2" class="apple-chic"></div>
+        <div id="color-3" class="cheery-pink"></div>
+        <div id="color-4" class="grandmas-pillow"></div>
+
+    </body>
+</html>
