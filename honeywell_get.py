@@ -6,6 +6,9 @@ import requests
 import sys
 import web
 import os
+import paho.mqtt.client as mqtt
+import paho.mqtt.publish as publish
+import yaml
 
 urls = (
     '/', 'index',
@@ -19,6 +22,11 @@ PASSWORD=os.environ.get('PASSWORD')
 DEVICE_ID=os.environ.get('DEVICE_ID')
 TEMPS_URL=os.environ.get('TEMPS_URL')
 AUTH=os.environ.get('AUTH')
+MQTT_HOST=os.environ.get('MQTT_HOST')
+MQTT_PORT=os.environ.get('MQTT_PORT')
+MQTT_TOPIC=os.environ.get('MQTT_TOPIC')
+MQTT_USER=os.environ.get('MQTT_USER')
+MQTT_PASS=os.environ.get('MQTT_PASS')
 
 def get_data():
 
@@ -72,6 +80,23 @@ class saveTemps:
         temps = get_data().text
         print temps
         r = requests.post(TEMPS_URL, data={'json' : temps})
+		
+		d = yaml.load(temps)
+		temp = str(d['latestData']['uiData']['DispTemperature'])
+		humid = str(d['latestData']['uiData']['IndoorHumidity'])
+
+		# save to mqtt broker
+		client = mqtt.Client("thermostat-client", clean_session=False, protocol=mqtt.MQTTv31)
+		client.username_pw_set(MQTT_USER, MQTT_PASS);
+		client.connect(MQTT_HOST, port=MQTT_PORT)
+		client.publish(MQTT_TOPIC + "/temperature", payload=temp, retain=True)
+		client.disconnect()
+		
+		client.connect(MQTT_HOST, port=MQTT_PORT)
+		client.publish(MQTT_TOPIC + "/humidity", payload=humid, retain=True)
+		
+		client.disconnect()
+		
         return r.text
         
 class temps:

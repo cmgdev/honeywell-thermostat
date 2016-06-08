@@ -1,2 +1,4 @@
 requests==2.4.3
 web.py==0.37
+paho-mqtt==1.1
+PyYAML==3.11
