@@ -1,6 +1,8 @@
 honeywell-thermostat
 ====================
 
+**This project is now archived. It technically still works as of early 2022, but with serious security vulnerabilities and other issues I'm not interested in fixing.**
+
 This started as a fork from nottings' https://github.com/nottings/python-honeywell-thermostat
 
 Huge thanks to him for the initial code, which honeywell_get.py borrows heavily from. 
